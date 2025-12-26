@@ -1,0 +1,1108 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "HealthCaring365 Demo API",
+    "version": "1.0.0",
+    "description": "Demo healthcare API with rich CRUD operations for Postman practice."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Local development"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string" }
+        }
+      },
+      "PatientSummary": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "mrn": { "type": "string" },
+          "name": { "type": "string" },
+          "ageYears": { "type": "integer" },
+          "gender": { "type": "string" },
+          "bloodGroup": { "type": "string" },
+          "primaryCondition": { "type": "string", "nullable": true },
+          "lastEncounter": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "encounterId": { "type": "string" },
+              "department": { "type": "string" },
+              "date": { "type": "string", "format": "date-time" },
+              "status": { "type": "string" }
+            }
+          }
+        }
+      },
+      "PatientBundle": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "mrn": { "type": "string" },
+          "patient": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "mrn": { "type": "string" },
+              "profile": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "object",
+                    "properties": {
+                      "display": { "type": "string" }
+                    }
+                  },
+                  "demographics": {
+                    "type": "object",
+                    "properties": {
+                      "ageYears": { "type": "integer" },
+                      "gender": { "type": "string" },
+                      "bloodGroup": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "clinical": {
+            "type": "object",
+            "properties": {
+              "conditions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "code": { "type": "string" },
+                    "name": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "encounters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "encounterId": { "type": "string" },
+                "location": {
+                  "type": "object",
+                  "properties": {
+                    "department": { "type": "string" }
+                  }
+                },
+                "period": {
+                  "type": "object",
+                  "properties": {
+                    "start": { "type": "string" }
+                  }
+                },
+                "status": { "type": "string" },
+                "vitalsTimeline": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": { "type": "string" },
+                      "bloodPressure": { "type": "string" },
+                      "heartRate": { "type": "integer" },
+                      "respRate": { "type": "integer" },
+                      "spo2": { "type": "integer" },
+                      "temperatureC": { "type": "number" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Appointment": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "patientId": { "type": "string" },
+          "provider": { "type": "string" },
+          "datetime": { "type": "string", "format": "date-time" },
+          "type": { "type": "string" },
+          "status": {
+            "type": "string",
+            "description": "scheduled | completed | cancelled"
+          }
+        }
+      },
+      "Invoice": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "patientId": { "type": "string" },
+          "amount": { "type": "number" },
+          "currency": { "type": "string" },
+          "status": {
+            "type": "string",
+            "description": "unpaid | paid | cancelled"
+          },
+          "encounterId": { "type": "string", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "paidAt": { "type": "string", "format": "date-time", "nullable": true }
+        }
+      },
+      "LabOrder": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "patientId": { "type": "string" },
+          "test": { "type": "string" },
+          "status": {
+            "type": "string",
+            "description": "ordered | in-progress | completed | cancelled"
+          },
+          "note": { "type": "string" }
+        }
+      },
+      "LabResult": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "orderId": { "type": "string" },
+          "patientId": { "type": "string" },
+          "test": { "type": "string" },
+          "result": { "type": "string" },
+          "date": { "type": "string", "format": "date" }
+        }
+      },
+      "Medication": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "patientId": { "type": "string" },
+          "medication": { "type": "string" },
+          "dosage": { "type": "string" },
+          "route": { "type": "string" },
+          "frequency": { "type": "string" },
+          "status": {
+            "type": "string",
+            "description": "active | stopped | completed"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "role": { "type": "string" },
+          "status": { "type": "string" }
+        }
+      },
+      "Role": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      },
+      "AuditLog": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "userId": { "type": "string" },
+          "action": { "type": "string" },
+          "resource": { "type": "string" },
+          "details": { "type": "string" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "summary": "Login and get API key",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+                "required": ["username", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "username": { "type": "string" },
+                        "displayName": { "type": "string" }
+                      }
+                    },
+                    "apiKey": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "/auth/logout": {
+        "post": {
+          "summary": "Logout user",
+          "description": "Client should delete its API key after calling this endpoint.",
+          "responses": {
+            "200": {
+              "description": "Logout successful"
+            }
+          }
+        }
+      }
+
+      
+    },
+
+    "/api": {
+      "get": {
+        "summary": "Health check",
+        "tags": ["System"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Service OK"
+          }
+        }
+      }
+    },
+
+    "/api/patients": {
+      "get": {
+        "summary": "List patient summaries",
+        "tags": ["Patients"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "Search by name / id / MRN"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of patient summaries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PatientSummary" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new patient",
+        "tags": ["Patients"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PatientBundle" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Patient created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PatientBundle" }
+              }
+            }
+          },
+          "400": { "description": "Validation error" },
+          "409": { "description": "Patient already exists" }
+        }
+      }
+    },
+
+    "/api/patients/paged": {
+      "get": {
+        "summary": "Paged patient summaries",
+        "tags": ["Patients"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": { "type": "integer", "default": 10 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paged result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "page": { "type": "integer" },
+                    "pageSize": { "type": "integer" },
+                    "total": { "type": "integer" },
+                    "totalPages": { "type": "integer" },
+                    "items": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/PatientSummary" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/patients/stats": {
+      "get": {
+        "summary": "Patient statistics",
+        "tags": ["Patients"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Stats by gender, blood group, condition"
+          }
+        }
+      }
+    },
+
+    "/api/patients/{id}/full": {
+      "get": {
+        "summary": "Get full patient record",
+        "tags": ["Patients"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Full patient bundle",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PatientBundle" }
+              }
+            }
+          },
+          "404": { "description": "Patient not found" }
+        }
+      }
+    },
+
+    "/api/patients/{id}/encounters": {
+      "get": {
+        "summary": "Get encounters for patient",
+        "tags": ["Patients"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "List of encounters" },
+          "404": { "description": "Patient not found" }
+        }
+      }
+    },
+
+    "/api/patients/{id}/vitals-timeline": {
+      "get": {
+        "summary": "Get vitals timeline for patient",
+        "tags": ["Patients"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "List of vitals points" },
+          "404": { "description": "Patient not found" }
+        }
+      }
+    },
+
+    "/api/patients/{id}": {
+      "put": {
+        "summary": "Replace patient",
+        "tags": ["Patients"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PatientBundle" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated bundle" },
+          "400": { "description": "Validation error" },
+          "404": { "description": "Patient not found" }
+        }
+      },
+      "patch": {
+        "summary": "Partial update patient",
+        "tags": ["Patients"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Merged bundle" },
+          "404": { "description": "Patient not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete patient",
+        "tags": ["Patients"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "404": { "description": "Patient not found" }
+        }
+      }
+    },
+
+    "/api/appointments": {
+      "get": {
+        "summary": "List appointments with filters",
+        "tags": ["Appointments"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "patientId", "in": "query", "schema": { "type": "string" } },
+          { "name": "status", "in": "query", "schema": { "type": "string" } },
+          { "name": "dateFrom", "in": "query", "schema": { "type": "string" } },
+          { "name": "dateTo", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of appointments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Appointment" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create appointment",
+        "tags": ["Appointments"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Appointment" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Appointment created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Appointment" }
+              }
+            }
+          },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+
+    "/api/appointments/{id}": {
+      "get": {
+        "summary": "Get appointment by id",
+        "tags": ["Appointments"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Appointment",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Appointment" }
+              }
+            }
+          },
+          "404": { "description": "Appointment not found" }
+        }
+      },
+      "put": {
+        "summary": "Replace appointment",
+        "tags": ["Appointments"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Appointment" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated appointment" },
+          "400": { "description": "Validation error" },
+          "404": { "description": "Appointment not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete appointment",
+        "tags": ["Appointments"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "404": { "description": "Appointment not found" }
+        }
+      }
+    },
+
+    "/api/appointments/{id}/cancel": {
+      "patch": {
+        "summary": "Cancel appointment",
+        "tags": ["Appointments"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Appointment cancelled" },
+          "404": { "description": "Appointment not found" }
+        }
+      }
+    },
+
+    "/api/billing/invoices": {
+      "get": {
+        "summary": "List invoices",
+        "tags": ["Billing"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "status", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of invoices",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Invoice" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create invoice",
+        "tags": ["Billing"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Invoice" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Invoice created" },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+
+    "/api/billing/invoices/{id}": {
+      "get": {
+        "summary": "Get invoice by id",
+        "tags": ["Billing"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invoice",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Invoice" }
+              }
+            }
+          },
+          "404": { "description": "Invoice not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete invoice",
+        "tags": ["Billing"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "404": { "description": "Invoice not found" }
+        }
+      }
+    },
+
+    "/api/billing/invoices/{id}/pay": {
+      "patch": {
+        "summary": "Mark invoice as paid",
+        "tags": ["Billing"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Invoice paid" },
+          "400": { "description": "Already paid" },
+          "404": { "description": "Invoice not found" }
+        }
+      }
+    },
+
+    "/api/labs/orders": {
+      "get": {
+        "summary": "List lab orders",
+        "tags": ["Labs"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Array of lab orders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/LabOrder" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create lab order",
+        "tags": ["Labs"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LabOrder" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Lab order created" },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+
+    "/api/labs/orders/{id}": {
+      "get": {
+        "summary": "Get lab order by id",
+        "tags": ["Labs"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lab order",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/LabOrder" }
+              }
+            }
+          },
+          "404": { "description": "Lab order not found" }
+        }
+      },
+      "patch": {
+        "summary": "Update lab order (status/note)",
+        "tags": ["Labs"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated lab order" },
+          "404": { "description": "Lab order not found" }
+        }
+      }
+    },
+
+    "/api/labs/results": {
+      "get": {
+        "summary": "List lab results",
+        "tags": ["Labs"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "patientId", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of lab results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/LabResult" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/labs/results/{id}": {
+      "get": {
+        "summary": "Get lab result by id",
+        "tags": ["Labs"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lab result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/LabResult" }
+              }
+            }
+          },
+          "404": { "description": "Lab result not found" }
+        }
+      }
+    },
+
+    "/api/medications": {
+      "get": {
+        "summary": "List medications",
+        "tags": ["Medications"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "patientId", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of medications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Medication" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create medication",
+        "tags": ["Medications"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Medication" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Medication created" },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+
+    "/api/medications/{id}": {
+      "patch": {
+        "summary": "Update medication",
+        "tags": ["Medications"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated medication" },
+          "404": { "description": "Medication not found" }
+        }
+      }
+    },
+
+    "/api/analytics/overview": {
+      "get": {
+        "summary": "Analytics overview",
+        "tags": ["Analytics"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "responses": {
+          "200": { "description": "Basic counts (patients, appointments, invoices)" }
+        }
+      }
+    },
+
+    "/api/admin/users": {
+      "get": {
+        "summary": "List users",
+        "tags": ["Admin"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Array of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/User" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create user",
+        "tags": ["Admin"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/User" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created" },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+
+    "/api/admin/users/{id}": {
+      "get": {
+        "summary": "Get user by id",
+        "tags": ["Admin"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "User",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "404": { "description": "User not found" }
+        }
+      },
+      "patch": {
+        "summary": "Update user",
+        "tags": ["Admin"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated user" },
+          "404": { "description": "User not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete user",
+        "tags": ["Admin"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "404": { "description": "User not found" }
+        }
+      }
+    },
+
+    "/api/admin/roles": {
+      "get": {
+        "summary": "List roles",
+        "tags": ["Admin"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Array of roles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Role" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/admin/audit-logs": {
+      "get": {
+        "summary": "List audit logs",
+        "tags": ["Admin"],
+        "security": [{ "ApiKeyAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Array of audit log entries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/AuditLog" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

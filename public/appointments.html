@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Appointments - PatientCare360</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <header>
+    <h1>Appointments</h1>
+    <nav>
+      <ul>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="patients.html">Patients</a></li>
+        <li><a href="appointments.html">Appointments</a></li>
+        <li><a href="billing.html">Billing</a></li>
+        <li><a href="labs.html">Labs</a></li>
+        <li><a href="medications.html">Medications</a></li>
+        <li><a href="analytics.html">Analytics</a></li>
+        <li><a href="admin.html">Admin</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="appointment-filters">
+      <h2>Filters</h2>
+      <form id="appointment-search-form">
+        <div>
+          <label for="appt-patient">Patient ID</label>
+          <input id="appt-patient" name="patientId" type="text">
+        </div>
+        <div>
+          <label for="appt-date">Date</label>
+          <input id="appt-date" name="date" type="date">
+        </div>
+        <button type="submit">Filter</button>
+      </form>
+    </section>
+
+    <section id="appointment-list">
+      <h2>Upcoming Appointments</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Patient</th>
+            <th>Provider</th>
+            <th>Type</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- JS fills appointments -->
+        </tbody>
+      </table>
+    </section>
+
+    <section id="appointment-create">
+      <h2>New Appointment</h2>
+      <form id="appointment-create-form">
+        <div>
+          <label for="create-patient-id">Patient ID</label>
+          <input id="create-patient-id" name="patientId" type="text">
+        </div>
+        <div>
+          <label for="create-provider">Provider</label>
+          <input id="create-provider" name="provider" type="text">
+        </div>
+        <div>
+          <label for="create-datetime">Date &amp; Time</label>
+          <input id="create-datetime" name="datetime" type="datetime-local">
+        </div>
+        <div>
+          <label for="create-type">Type</label>
+          <input id="create-type" name="type" type="text" placeholder="Consultation">
+        </div>
+        <button type="submit">Create Appointment</button>
+      </form>
+    </section>
+  </main>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/appointments.js"></script>
+</body>
+</html>

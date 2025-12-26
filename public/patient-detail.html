@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Patient Detail - PatientCare360</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <header>
+    <h1>Patient Detail</h1>
+    <nav>
+      <ul>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="patients.html">Patients</a></li>
+        <li><a href="appointments.html">Appointments</a></li>
+        <li><a href="billing.html">Billing</a></li>
+        <li><a href="labs.html">Labs</a></li>
+        <li><a href="medications.html">Medications</a></li>
+        <li><a href="analytics.html">Analytics</a></li>
+        <li><a href="admin.html">Admin</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="patient-header">
+      <h2>Patient Summary</h2>
+      <div id="patient-basic-info">
+        <!-- JS fills summary -->
+      </div>
+    </section>
+
+    <section id="patient-conditions">
+      <h2>Conditions</h2>
+      <ul id="condition-list">
+        <!-- JS fills conditions -->
+      </ul>
+    </section>
+
+    <section id="patient-encounters">
+      <h2>Encounters</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Encounter ID</th>
+            <th>Department</th>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- JS fills encounters -->
+        </tbody>
+      </table>
+    </section>
+
+    <section id="patient-vitals-timeline">
+      <h2>Vitals Timeline</h2>
+      <div id="vitals-chart">
+        <!-- JS fills vitals info -->
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/patient-detail.js"></script>
+</body>
+</html>

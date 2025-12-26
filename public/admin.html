@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - PatientCare360</title>
+  <link rel="stylesheet" href="/css/app.css">
+
+</head>
+<body>
+    <header>
+      <div class="header-left"></div>
+
+      <div class="header-center">
+        <h1>Admin</h1>
+        <nav>
+          <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="patients.html">Patients</a></li>
+            <li><a href="appointments.html">Appointments</a></li>
+            <li><a href="billing.html">Billing</a></li>
+            <li><a href="labs.html">Labs</a></li>
+            <li><a href="medications.html">Medications</a></li>
+            <li><a href="analytics.html">Analytics</a></li>
+            <li><a href="admin.html">Admin</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <button id="logoutBtn" class="btn-logout">Logout</button>
+    </header>
+
+
+  <main>
+    <section id="admin-users">
+      <h2>Users</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- JS fills users -->
+        </tbody>
+      </table>
+    </section>
+
+    <section id="admin-roles">
+      <h2>Roles &amp; Permissions</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- JS fills roles -->
+        </tbody>
+      </table>
+    </section>
+
+    <section id="admin-audit-logs">
+      <h2>Audit Logs</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>User</th>
+            <th>Action</th>
+            <th>Resource</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- JS fills audit logs -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

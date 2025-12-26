@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Patients - PatientCare360</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <header>
+    <h1>Patients</h1>
+    <nav>
+      <ul>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="patients.html">Patients</a></li>
+        <li><a href="appointments.html">Appointments</a></li>
+        <li><a href="billing.html">Billing</a></li>
+        <li><a href="labs.html">Labs</a></li>
+        <li><a href="medications.html">Medications</a></li>
+        <li><a href="analytics.html">Analytics</a></li>
+        <li><a href="admin.html">Admin</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="patient-filters">
+      <h2>Search & Filters</h2>
+      <form id="patient-search-form">
+        <div>
+          <label for="search-name">Name / ID</label>
+          <input id="search-name" name="q" type="text">
+        </div>
+        <div>
+          <label for="search-condition">Condition</label>
+          <input id="search-condition" name="condition" type="text">
+        </div>
+        <div>
+          <label for="min-age">Min Age</label>
+          <input id="min-age" name="minAge" type="number">
+        </div>
+        <div>
+          <label for="max-age">Max Age</label>
+          <input id="max-age" name="maxAge" type="number">
+        </div>
+        <button type="submit">Apply Filters</button>
+      </form>
+    </section>
+
+    <section id="patient-list">
+      <h2>Patient List</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>MRN</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Primary Condition</th>
+            <th>Last Encounter</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- JS fills patient rows -->
+        </tbody>
+      </table>
+    </section>
+
+    <section id="patient-pagination">
+      <h2>Pages</h2>
+      <div>
+        <!-- JS fills page info -->
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/patients.js"></script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+{
+  "info": {
+    "name": "HealthCaring365 API Collection",
+    "_postman_id": "hc365-collection-001",
+    "description": "Complete CRUD Postman collection for HealthCaring365 demo server.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+
+  "item": [
+    {
+      "name": "AUTH",
+      "item": [
+        {
+          "name": "Login – Get API Key",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "let json = pm.response.json();",
+                  "",
+                  "// Save API key for all future requests",
+                  "pm.collectionVariables.set(\"apiKey\", json.apiKey);",
+                  "",
+                  "pm.test(\"API Key extracted\", function() {",
+                  "   pm.expect(json.apiKey).to.exist;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "PATIENTS",
+      "item": [
+        {
+          "name": "Get All Patients",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-api-key", "value": "{{apiKey}}" }
+            ],
+            "url": "http://localhost:5000/api/patients"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "let data = pm.response.json();",
+                  "pm.expect(data).to.be.an('array');",
+                  "",
+                  "// store first patientId",
+                  "if (data.length) pm.collectionVariables.set(\"patientId\", data[0].id);"
+                ]
+              }
+            }
+          ]
+        },
+
+        {
+          "name": "Get Patient Full Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-api-key", "value": "{{apiKey}}" }
+            ],
+            "url": "http://localhost:5000/api/patients/{{patientId}}/full"
+          }
+        },
+
+        {
+          "name": "Create Patient",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "x-api-key", "value": "{{apiKey}}" }],
+            "url": "http://localhost:5000/api/patients",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"p999\",\n  \"mrn\": \"MRN999\",\n  \"patient\": {\n    \"id\": \"p999\",\n    \"mrn\": \"MRN999\",\n    \"profile\": {\n      \"name\": { \"display\": \"Test User\" },\n      \"demographics\": {\n        \"ageYears\": 33,\n        \"gender\": \"other\",\n        \"bloodGroup\": \"B+\"\n      }\n    }\n  },\n  \"clinical\": {\"conditions\": []},\n  \"encounters\": []\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.response.to.have.status(201);",
+                  "let json = pm.response.json();",
+                  "pm.collectionVariables.set(\"newPatientId\", json.id);"
+                ]
+              }
+            }
+          ]
+        },
+
+        {
+          "name": "Update Patient (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "x-api-key", "value": "{{apiKey}}" }],
+            "url": "http://localhost:5000/api/patients/{{newPatientId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"p999\",\n  \"mrn\": \"MRN999\",\n  \"patient\": {\n    \"id\": \"p999\",\n    \"mrn\": \"MRN999\",\n    \"profile\": {\n      \"name\": { \"display\": \"Updated User\" },\n      \"demographics\": {\n        \"ageYears\": 88,\n        \"gender\": \"male\",\n        \"bloodGroup\": \"A+\"\n      }\n    }\n  },\n  \"clinical\": {\"conditions\": [{\"name\": \"Flu\"}]},\n  \"encounters\": []\n}"
+            }
+          }
+        },
+
+        {
+          "name": "Patch Patient (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "x-api-key", "value": "{{apiKey}}" }],
+            "url": "http://localhost:5000/api/patients/{{newPatientId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n \"patient\": {\"profile\": {\"name\": {\"display\": \"Patched User\"}}}\n}"
+            }
+          }
+        },
+
+        {
+          "name": "Delete Patient",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "x-api-key", "value": "{{apiKey}}" }],
+            "url": "http://localhost:5000/api/patients/{{newPatientId}}"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "APPOINTMENTS",
+      "item": [
+        {
+          "name": "Get All Appointments",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-api-key", "value": "{{apiKey}}" }],
+            "url": "http://localhost:5000/api/appointments"
+          }
+        },
+
+        {
+          "name": "Create Appointment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "x-api-key", "value": "{{apiKey}}" }],
+            "url": "http://localhost:5000/api/appointments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientId\": \"p1\",\n  \"provider\": \"Dr. House\",\n  \"datetime\": \"2024-04-01T10:00:00Z\",\n  \"type\": \"Consultation\"\n}"
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "BILLING",
+      "item": [
+        {
+          "name": "Get All Invoices",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-api-key", "value": "{{apiKey}}" }],
+            "url": "http://localhost:5000/api/billing/invoices"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "LABS",
+      "item": [
+        {
+          "name": "Get Lab Orders",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-api-key", "value": "{{apiKey}}" }],
+            "url": "http://localhost:5000/api/labs/orders"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "MEDICATIONS",
+      "item": [
+        {
+          "name": "Get Medications",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-api-key", "value": "{{apiKey}}" }],
+            "url": "http://localhost:5000/api/medications"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "ANALYTICS",
+      "item": [
+        {
+          "name": "Get Overview",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-api-key", "value": "{{apiKey}}" }],
+            "url": "http://localhost:5000/api/analytics/overview"
+          }
+        }
+      ]
+    },
+
+    {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "http://localhost:5000/auth/logout"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// clear apiKey variable",
+                  "pm.collectionVariables.unset(\"apiKey\");",
+                  "pm.test(\"Logged out\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+
+
+    {
+      "name": "ADMIN",
+      "item": [
+        {
+          "name": "Get Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-api-key", "value": "{{apiKey}}" }],
+            "url": "http://localhost:5000/api/admin/users"
+          }
+        },
+        {
+          "name": "Get Roles",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-api-key", "value": "{{apiKey}}" }],
+            "url": "http://localhost:5000/api/admin/roles"
+          }
+        }
+      ]
+    }
+  ]
+}
