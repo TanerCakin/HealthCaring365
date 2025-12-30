@@ -1,6 +1,6 @@
-# HealthCaring365 – PatientCare360 Demo Application
+# HealthCaring365 - Demo Application
 
-HealthCaring365 (also referred to as **PatientCare360**) is a **full-stack healthcare management demo application** built with **Node.js, Express, and vanilla HTML/CSS/JavaScript**.
+HealthCaring365 is a **full-stack healthcare management demo application** built with **Node.js, Express, and vanilla HTML/CSS/JavaScript**.
 
 It simulates a real-world healthcare system with **patients, appointments, billing, labs, medications, analytics, and admin management**, backed by a RESTful API and documented with **Swagger**.
 
